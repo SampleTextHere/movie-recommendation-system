@@ -14,10 +14,6 @@ The project includes:
 
 ## Live Demo
 
-Users can access the deployed application here:
-
-https://huggingface.co/spaces/TTRau/movie-recommendation-system
-
 Direct app link:
 
 https://ttrau-movie-recommendation-system.hf.space
@@ -61,47 +57,6 @@ streamlit run app_v3.py
 ```
 
 The first launch can take several minutes because the application downloads and prepares the MovieLens 32M dataset.
-
-## Deploy Yourself
-
-You can deploy this project yourself using Hugging Face Spaces.
-
-Recommended settings:
-
-```text
-SDK: Docker
-Docker template: Streamlit
-Hardware: CPU Basic
-Visibility: Public or Private
-```
-
-After creating the Space, upload or push these files:
-
-```text
-app_v3.py
-requirements.txt
-README.md
-Dockerfile
-```
-
-The app automatically downloads the dataset inside the deployment environment.  
-The dataset is **not** downloaded to the user's computer.
-
-## Hugging Face Spaces README Metadata
-
-If deploying to Hugging Face Spaces with Docker, the top of the Space README should include:
-
-```yaml
----
-title: Movie Recommendation System
-emoji: 🎬
-colorFrom: blue
-colorTo: purple
-sdk: docker
-app_port: 8501
-pinned: false
----
-```
 
 ## Project Structure
 

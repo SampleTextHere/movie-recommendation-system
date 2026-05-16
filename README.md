@@ -1,19 +1,8 @@
----
-title: Movie Recommendation System
-emoji: 🎬
-colorFrom: blue
-colorTo: purple
-sdk: streamlit
-sdk_version: 1.41.1
-app_file: app_v3.py
-pinned: false
----
-
 # Movie Recommendation System
 
-This project is a movie recommendation system built with the MovieLens 32M dataset.
+A movie recommendation system built with the MovieLens 32M dataset.
 
-It includes:
+The project includes:
 
 - Content-based filtering
 - Item-based collaborative filtering
@@ -23,11 +12,23 @@ It includes:
 - Hybrid recommendation system
 - Streamlit web interface
 
+## Live Demo
+
+Users can access the deployed application here:
+
+https://huggingface.co/spaces/TTRau/movie-recommendation-system
+
+Direct app link:
+
+https://ttrau-movie-recommendation-system.hf.space
+
 ## Dataset
 
-The dataset files are not included in this repository because they are large.
+This project uses the MovieLens 32M dataset.
 
-The application automatically downloads the MovieLens 32M dataset from GroupLens on first launch if these files are missing:
+The dataset files are **not included** in this repository because they are large.
+
+The application automatically downloads the required MovieLens 32M files on first launch if they are missing:
 
 ```text
 data/movies.csv
@@ -43,41 +44,64 @@ data/processed_movies.csv
 
 from `movies.csv` and `tags.csv` if it does not already exist.
 
-The notebooks are useful for development and explanation, but they are not required to run the Streamlit app.
+Therefore, users do **not** need to run the notebooks manually to use the application.
 
 ## Run Locally
 
-Install dependencies:
+Install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the app:
+Run the Streamlit app:
 
 ```bash
 streamlit run app_v3.py
 ```
 
-## Deploy on Hugging Face Spaces
+The first launch can take several minutes because the application downloads and prepares the MovieLens 32M dataset.
 
-Create a new Hugging Face Space with:
+## Deploy Yourself
+
+You can deploy this project yourself using Hugging Face Spaces.
+
+Recommended settings:
 
 ```text
-SDK: Streamlit
-App file: app_v3.py
+SDK: Docker
+Docker template: Streamlit
+Hardware: CPU Basic
+Visibility: Public or Private
 ```
 
-Then upload/push these files:
+After creating the Space, upload or push these files:
 
 ```text
 app_v3.py
 requirements.txt
 README.md
-notebooks/
+Dockerfile
 ```
 
-The dataset will be downloaded automatically when the app starts.
+The app automatically downloads the dataset inside the deployment environment.  
+The dataset is **not** downloaded to the user's computer.
+
+## Hugging Face Spaces README Metadata
+
+If deploying to Hugging Face Spaces with Docker, the top of the Space README should include:
+
+```yaml
+---
+title: Movie Recommendation System
+emoji: 🎬
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 8501
+pinned: false
+---
+```
 
 ## Project Structure
 
@@ -88,6 +112,7 @@ movie-recommendation-system/
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
+├── Dockerfile
 │
 ├── notebooks/
 │   ├── 1_data_processing.ipynb
@@ -96,11 +121,40 @@ movie-recommendation-system/
 │   └── 4_hybrid_filtering.ipynb
 │
 └── data/
-    └── processed_movies.csv  # auto-generated
+    └── .gitkeep
 ```
+
+## Recommendation Methods
+
+### Content-Based Filtering
+
+Uses movie metadata such as title, genres, and tags to recommend similar movies.
+
+### Item-Based Collaborative Filtering
+
+Uses user rating behavior to recommend movies that were rated similarly by users.
+
+### User-Based Collaborative Filtering
+
+Finds users with similar rating patterns and recommends movies based on their preferences.
+
+### Weighted Collaborative Filtering
+
+Uses similarity scores as weights when calculating recommendation scores from similar users.
+
+### Normalized Weighted Collaborative Filtering
+
+Normalizes user ratings by subtracting each user's mean rating before calculating weighted predictions.
+
+### Hybrid Filtering
+
+Combines content-based and item-based collaborative filtering scores into a final hybrid recommendation score.
+
+The hybrid system dynamically adjusts the contribution of content-based and collaborative filtering according to the selected movie's rating count.
 
 ## Notes
 
-- The first launch can take several minutes because the app downloads and prepares the MovieLens 32M dataset.
 - Large dataset files are ignored by Git and should not be uploaded to GitHub.
-- The full 32M dataset may require significant memory during model preparation.
+- The first deployment startup may take several minutes.
+- If the deployment environment restarts, the dataset may need to be downloaded again.
+- The notebooks are included for development and explanation purposes.

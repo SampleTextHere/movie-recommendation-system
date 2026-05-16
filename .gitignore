@@ -4,6 +4,9 @@ data/*.zip
 data/*.dat
 data/ml-*/
 
+# Keep empty data folder in Git
+!data/.gitkeep
+
 # Python
 __pycache__/
 *.pyc

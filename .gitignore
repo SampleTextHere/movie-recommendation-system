@@ -1,0 +1,22 @@
+# Dataset files
+data/*.csv
+data/*.zip
+data/*.dat
+data/ml-*/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db

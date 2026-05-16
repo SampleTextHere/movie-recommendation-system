@@ -20,7 +20,7 @@ st.set_page_config(
 )
 
 st.title("Movie Recommendation System")
-st.caption("APP VERSION: 32M sparse-compatible")
+st.caption("APP VERSION: 32M sparse-compatible + auto preprocessing")
 
 st.write(
     "This app uses content-based filtering, item-based collaborative filtering, "
@@ -49,11 +49,115 @@ def get_data_path(filename):
 
 
 # -------------------------------
+# Create processed_movies.csv if needed
+# -------------------------------
+
+def create_processed_movies():
+    """
+    Creates data/processed_movies.csv from movies.csv and tags.csv.
+
+    This allows the Streamlit app to run without requiring the
+    data-processing notebook to be executed first.
+    """
+
+    movies_path = get_data_path("movies.csv")
+
+    try:
+        tags_path = get_data_path("tags.csv")
+        tags_available = True
+
+    except FileNotFoundError:
+        tags_available = False
+
+    movies_raw = pd.read_csv(
+        movies_path
+    )
+
+    movies_raw["title"] = (
+        movies_raw["title"]
+        .fillna("")
+        .astype(str)
+    )
+
+    movies_raw["genres"] = (
+        movies_raw["genres"]
+        .fillna("")
+        .astype(str)
+        .str.replace("|", " ", regex=False)
+    )
+
+    movies_raw["clean_title"] = (
+        movies_raw["title"]
+        .str.replace(r"\(\d{4}\)", "", regex=True)
+        .str.strip()
+    )
+
+    if tags_available:
+        tags = pd.read_csv(
+            tags_path,
+            usecols=["movieId", "tag"]
+        )
+
+        tags = tags[
+            ["movieId", "tag"]
+        ].dropna().copy()
+
+        tags["tag"] = (
+            tags["tag"]
+            .astype(str)
+        )
+
+        tag_group = (
+            tags.groupby("movieId")["tag"]
+            .apply(lambda x: " ".join(x))
+            .reset_index()
+        )
+
+        movies_processed = movies_raw.merge(
+            tag_group,
+            on="movieId",
+            how="left"
+        )
+
+        movies_processed["tag"] = (
+            movies_processed["tag"]
+            .fillna("")
+        )
+
+    else:
+        movies_processed = movies_raw.copy()
+        movies_processed["tag"] = ""
+
+    movies_processed["metadata"] = (
+        movies_processed["clean_title"] + " "
+        + movies_processed["genres"] + " "
+        + movies_processed["tag"]
+    )
+
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+
+    output_path = data_dir / "processed_movies.csv"
+
+    movies_processed.to_csv(
+        output_path,
+        index=False
+    )
+
+    return output_path
+
+
+# -------------------------------
 # Load data
 # -------------------------------
 
 @st.cache_data(show_spinner=False)
 def load_data():
+    processed_movies_path = Path("data") / "processed_movies.csv"
+
+    if not processed_movies_path.exists():
+        create_processed_movies()
+
     movies = pd.read_csv(
         get_data_path("processed_movies.csv")
     )
@@ -83,7 +187,7 @@ def load_data():
     return movies, ratings
 
 
-with st.spinner("Loading datasets..."):
+with st.spinner("Loading datasets and preparing processed movie metadata if needed..."):
     movies, ratings = load_data()
 
 

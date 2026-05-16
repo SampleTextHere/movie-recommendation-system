@@ -1,7 +1,4 @@
 from pathlib import Path
-import shutil
-import urllib.request
-import zipfile
 
 import numpy as np
 import pandas as pd
@@ -23,7 +20,7 @@ st.set_page_config(
 )
 
 st.title("Movie Recommendation System")
-st.caption("APP VERSION: 32M sparse-compatible + auto dataset download")
+st.caption("APP VERSION: 32M sparse-compatible + auto preprocessing")
 
 st.write(
     "This app uses content-based filtering, item-based collaborative filtering, "
@@ -48,83 +45,6 @@ def get_data_path(filename):
 
     raise FileNotFoundError(
         f"Could not find {filename}. Expected data/{filename} or {filename}."
-    )
-
-
-# -------------------------------
-# Download MovieLens 32M if needed
-# -------------------------------
-
-def download_movielens_32m_if_needed():
-    """
-    Downloads and extracts the MovieLens 32M dataset if the required
-    CSV files do not already exist in the data folder.
-    """
-
-    data_dir = Path("data")
-    data_dir.mkdir(exist_ok=True)
-
-    required_files = [
-        data_dir / "movies.csv",
-        data_dir / "ratings.csv",
-        data_dir / "tags.csv"
-    ]
-
-    if all(file.exists() for file in required_files):
-        return
-
-    dataset_url = (
-        "https://files.grouplens.org/datasets/movielens/ml-32m.zip"
-    )
-
-    zip_path = data_dir / "ml-32m.zip"
-    extracted_dir = data_dir / "ml-32m"
-
-    st.warning(
-        "MovieLens 32M dataset files were not found. "
-        "The app will download them automatically. "
-        "This may take several minutes on first launch."
-    )
-
-    if not zip_path.exists():
-        with st.spinner("Downloading MovieLens 32M dataset..."):
-            urllib.request.urlretrieve(
-                dataset_url,
-                zip_path
-            )
-
-    if not extracted_dir.exists():
-        with st.spinner("Extracting MovieLens 32M dataset..."):
-            with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                zip_ref.extractall(data_dir)
-
-    for filename in [
-        "movies.csv",
-        "ratings.csv",
-        "tags.csv"
-    ]:
-        source = extracted_dir / filename
-        target = data_dir / filename
-
-        if source.exists() and not target.exists():
-            shutil.copy(
-                source,
-                target
-            )
-
-    missing_files = [
-        str(file) for file in required_files
-        if not file.exists()
-    ]
-
-    if missing_files:
-        raise FileNotFoundError(
-            "Dataset download/extraction failed. Missing files: "
-            + ", ".join(missing_files)
-        )
-
-    st.success(
-        "MovieLens 32M dataset is ready."
     )
 
 
@@ -233,8 +153,6 @@ def create_processed_movies():
 
 @st.cache_data(show_spinner=False)
 def load_data():
-    download_movielens_32m_if_needed()
-
     processed_movies_path = Path("data") / "processed_movies.csv"
 
     if not processed_movies_path.exists():

@@ -1,3 +1,14 @@
+---
+title: Movie Recommendation System
+emoji: 🎬
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+sdk_version: 1.41.1
+app_file: app_v3.py
+pinned: false
+---
+
 # Movie Recommendation System
 
 This project is a movie recommendation system built with the MovieLens 32M dataset.
@@ -14,9 +25,9 @@ It includes:
 
 ## Dataset
 
-The dataset files are not included in this repository because they are too large for GitHub.
+The dataset files are not included in this repository because they are large.
 
-Download the MovieLens 32M dataset and place these files inside the `data/` folder:
+The application automatically downloads the MovieLens 32M dataset from GroupLens on first launch if these files are missing:
 
 ```text
 data/movies.csv
@@ -24,7 +35,7 @@ data/ratings.csv
 data/tags.csv
 ```
 
-The application automatically creates:
+The application also automatically creates:
 
 ```text
 data/processed_movies.csv
@@ -32,9 +43,9 @@ data/processed_movies.csv
 
 from `movies.csv` and `tags.csv` if it does not already exist.
 
-So the notebooks are useful for development and explanation, but they are not required to run the Streamlit app.
+The notebooks are useful for development and explanation, but they are not required to run the Streamlit app.
 
-## Run the Application
+## Run Locally
 
 Install dependencies:
 
@@ -47,6 +58,26 @@ Run the app:
 ```bash
 streamlit run app_v3.py
 ```
+
+## Deploy on Hugging Face Spaces
+
+Create a new Hugging Face Space with:
+
+```text
+SDK: Streamlit
+App file: app_v3.py
+```
+
+Then upload/push these files:
+
+```text
+app_v3.py
+requirements.txt
+README.md
+notebooks/
+```
+
+The dataset will be downloaded automatically when the app starts.
 
 ## Project Structure
 
@@ -65,14 +96,11 @@ movie-recommendation-system/
 │   └── 4_hybrid_filtering.ipynb
 │
 └── data/
-    ├── movies.csv
-    ├── ratings.csv
-    ├── tags.csv
     └── processed_movies.csv  # auto-generated
 ```
 
 ## Notes
 
-- `processed_movies.csv` is generated automatically by the app.
+- The first launch can take several minutes because the app downloads and prepares the MovieLens 32M dataset.
 - Large dataset files are ignored by Git and should not be uploaded to GitHub.
-- The notebooks are included for documentation and development purposes.
+- The full 32M dataset may require significant memory during model preparation.
